@@ -2,7 +2,7 @@
 
 在脚本中用相机获取当前的深度图，在片段着色器中，获取某个点的深度值，如果在阈值范围内就改变颜色。
 
-<img src="https://github.com/Aelinuial/My-Unity-Shader/blob/master/Pics/Scanner.jpg" width = "400" height = "200"/>
+<img src="https://github.com/Aelinuial/My-Unity-Shader/blob/master/Pics/Scanner.jpg" width = "300" height = "200"/>
 
 这个效果通过屏幕后处理的方式实现。关于屏幕后处理，主要是用到 **OnRenderer(RenderTexture src, RenderTexture dst)** 函数。Unity把当前渲染得到的图像存储在src中，然后通过函数进行一系列操作后，再把dst图像显示到屏幕上。
 
