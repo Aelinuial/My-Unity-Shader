@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mat: {fileID: 2100000, guid: 81f8fcbb5b24d1d4c867ffde92008daa, type: 2}
-  velocity: 5
+  velocity: 0.01
 --- !u!1 &625826764
 GameObject:
   m_ObjectHideFlags: 0
