@@ -3,6 +3,7 @@
     Properties
     {
         _FeatureTex ("FeatureTex", 2D) = "white" {}
+        _OutlineNoiseTex("_OutlineNoiseTex", 2D) = "white" {}
         _MainTex ("MainTex", 2D) = "white" {}
     }
     SubShader
@@ -32,6 +33,8 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
+            sampler2D _OutlineNoiseTex;
+            sampler2D _OutlineNoiseTex_ST;
             sampler2D _FeatureTex;
             float4 _FeatureTex_ST;
 
@@ -45,10 +48,9 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 fcol = tex2D(_FeatureTex, i.uv);
+                float2 newuv = i.uv + sin(tex2D(_OutlineNoiseTex, i.uv + float2(_Time.y, -_Time.y)).x * 6) * tex2D(_OutlineNoiseTex, i.uv).xy / 5;
+                fixed4 fcol = tex2D(_FeatureTex, newuv);
                 clip(0.5 - fcol.a);
-                //fixed4 col = tex2D(_MainTex, i.uv);
-                //return col;
                 return float4(1, 0, 0, 1);
             }
             ENDCG
