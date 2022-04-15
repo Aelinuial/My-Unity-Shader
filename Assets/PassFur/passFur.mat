@@ -19,15 +19,22 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _furTex:
+    - _furMaskTex:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _furTex:
+        m_Texture: {fileID: 2800000, guid: 38e48c9989283a24bb9c7ea8f5eef390, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _noiseTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
+        m_Texture: {fileID: 2800000, guid: d022ba6e877c6ca49a56cbee757a2f6c, type: 3}
+        m_Scale: {x: 50, y: 50}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _furLength: 0.33
+    - _furLength: 0.1
+    - _furRadius: 1.36
+    - _occlusionPower: 0.16
     m_Colors:
+    - _occlusionColor: {r: 0.4433962, g: 0.3029092, b: 0.2739854, a: 1}
     - _uvOffset: {r: 0, g: 0, b: 0.2, a: 0.2}
