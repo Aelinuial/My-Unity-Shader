@@ -1,3 +1,6 @@
+//todo：加一个基础贴图，然后去掉透明的部分 √
+//todo：控制阴影大小比例
+
 Shader "myShader/WashPainting"
 {
     Properties
@@ -11,13 +14,18 @@ Shader "myShader/WashPainting"
     
         [Header(Interior)]
         _RampTexture("Ramp Texture", 2D) = "white"{}
+        _BrushTexture("Brush Texture", 2D) = "white"{}
 
+        [Header(ModelTexture)]
+        _ModelTexture("Model Texture", 2D) = "white"{}
+        _CutThreshold("Cut Threshold", Range(0, 1)) = 0.5
+        _ShadowPower("Shadow Power", float) = 1.0
     }
     SubShader
     {
         Tags { 
-                "RenderType"="Opaque" 
-                "Queue"="Geometry"
+            "RenderType"="Opaque" 
+            "Queue"="Geometry"
         }
 
         Pass
@@ -33,11 +41,13 @@ Shader "myShader/WashPainting"
             {
                 float4 vertex : POSITION;
                 float3 normal : NORMAL;
+                float2 uv : TEXCOORD0;
             };
 
             struct v2f
             {
                 float4 vertex : SV_POSITION;
+                float2 uv : TEXCOORD0;
             };
 
             float4 _StrokeColor;
@@ -45,6 +55,9 @@ Shader "myShader/WashPainting"
             float _OutlineWidth;
             float _OutsideNoiseWidth;
             float _MaxOutlineOffset;
+            sampler2D _ModelTexture;
+            float4 _ModelTexture_ST;
+            float _CutThreshold;
 
             v2f vert (appdata v)
             {
@@ -57,11 +70,14 @@ Shader "myShader/WashPainting"
 
                 v2f o;
                 o.vertex = mul(UNITY_MATRIX_P, vspos);
+                o.uv = TRANSFORM_TEX(v.uv, _ModelTexture);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
+                float texAlpha = tex2D(_ModelTexture, i.uv).a;
+                clip(texAlpha - _CutThreshold);
                 return fixed4(0, 0, 0, 1);
             }
             ENDCG
@@ -86,7 +102,7 @@ Shader "myShader/WashPainting"
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float4 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
             };
 
@@ -96,6 +112,9 @@ Shader "myShader/WashPainting"
             float _OutlineWidth;
             float _OutsideNoiseWidth;
             float _MaxOutlineOffset;
+            sampler2D _ModelTexture;
+            float4 _ModelTexture_ST;
+            float _CutThreshold;
 
             v2f vert (appdata v)
             {
@@ -108,13 +127,17 @@ Shader "myShader/WashPainting"
 
                 v2f o;
                 o.vertex = mul(UNITY_MATRIX_P, vspos);
-                o.uv = TRANSFORM_TEX(v.uv, _OutlineNoise);
+                o.uv.xy = TRANSFORM_TEX(v.uv, _OutlineNoise);
+                o.uv.zw = TRANSFORM_TEX(v.uv, _ModelTexture);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed3 burn = tex2D(_OutlineNoise, i.uv).rgb;
+                float texAlpha = tex2D(_ModelTexture, i.uv.zw).a;
+                clip(texAlpha - _CutThreshold);
+
+                fixed3 burn = tex2D(_OutlineNoise, i.uv.xy).rgb;
                 if (burn.x > 0.5)
                     discard;
                 return fixed4(0, 0, 0, 1);
@@ -143,12 +166,16 @@ Shader "myShader/WashPainting"
                 float3 worldNormal : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
                 float4 vertex : SV_POSITION;
-                float2 uv : TEXCOORD2;
+                float4 uv : TEXCOORD2;
             };
 
             sampler2D _RampTexture;
             sampler2D _OutlineNoise;
             float4 _OutlineNoise_ST;
+            sampler2D _ModelTexture;
+            float4 _ModelTexture_ST;
+            float _CutThreshold;
+            float _ShadowPower;
 
             v2f vert (appdata v)
             {
@@ -156,17 +183,21 @@ Shader "myShader/WashPainting"
                 o.worldPos = UnityObjectToWorldDir(v.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.vertex = UnityObjectToClipPos(v.vertex);
-                o.uv = TRANSFORM_TEX(v.uv, _OutlineNoise);
+                o.uv.xy = TRANSFORM_TEX(v.uv, _OutlineNoise);
+                o.uv.zw = TRANSFORM_TEX(v.uv, _ModelTexture);
                 return o;
             }
 
             fixed4 frag (v2f i) : SV_Target
             {
+                float texAlpha = tex2D(_ModelTexture, i.uv.zw).a;
+                clip(texAlpha - _CutThreshold);
+
                 fixed3 worldNormal = normalize(i.worldNormal);
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
                 fixed diff = dot(worldNormal, worldLightDir) * 0.5 + 0.5;
-                float burn = tex2D(_OutlineNoise, i.uv).r / 3;
-                diff = diff + burn;
+                float burn = tex2D(_OutlineNoise, i.uv.xy).r / 3;
+                diff = diff + burn * _ShadowPower;
 
                 fixed4 color = tex2D(_RampTexture, float2(diff,diff));
                 return color;
