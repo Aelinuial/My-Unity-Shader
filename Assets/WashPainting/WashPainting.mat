@@ -20,7 +20,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BrushTexture:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: e41d7ff53fcafb84eb5a20b8b5297fa0, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ModelTexture:
@@ -28,7 +28,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OutlineNoise:
-        m_Texture: {fileID: 2800000, guid: e41d7ff53fcafb84eb5a20b8b5297fa0, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4b99319229f59b1469f75ce597fa252f, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _RampTexture:
@@ -36,10 +36,10 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _CutThreshold: 0.5
-    - _MaxOutlineOffset: 0.446
-    - _OutlineWidth: 0.092
-    - _OutsideNoiseWidth: 0.137
+    - _CutThreshold: 0.558
+    - _MaxOutlineOffset: 0.427
+    - _OutlineWidth: 0.081
+    - _OutsideNoiseWidth: 0.155
     - _ShadowPower: 1
     m_Colors:
     - _StrokeColor: {r: 0, g: 0, b: 0, a: 1}

@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: b87d7fe8d52fc3f48bda17c2db0d2514
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - shader: {fileID: 4800000, guid: bd49ff5882434324fa9b55d9a36d2154, type: 3}
+  - bloodTexture: {fileID: 2800000, guid: 368e5b588df5bae41a1adab26b2a61e9, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

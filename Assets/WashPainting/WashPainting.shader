@@ -1,6 +1,3 @@
-//todo：加一个基础贴图，然后去掉透明的部分 √
-//todo：控制阴影大小比例
-
 Shader "myShader/WashPainting"
 {
     Properties
@@ -24,8 +21,9 @@ Shader "myShader/WashPainting"
     SubShader
     {
         Tags { 
-            "RenderType"="Opaque" 
-            "Queue"="Geometry"
+            "LIGHTMODE" = "FORWARDBASE" 
+            "SHADOWSUPPORT" = "true" 
+            "RenderType" = "Opaque"
         }
 
         Pass
@@ -148,11 +146,16 @@ Shader "myShader/WashPainting"
         //渲染内部光照
         Pass
         {
+            ZWrite On
+            ZTest On
+
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_fwdbase
 
             #include "UnityCG.cginc"
+            #include "AutoLight.cginc"
 
             struct appdata
             {
@@ -165,8 +168,9 @@ Shader "myShader/WashPainting"
             {
                 float3 worldNormal : TEXCOORD0;
                 float3 worldPos : TEXCOORD1;
-                float4 vertex : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float4 uv : TEXCOORD2;
+                SHADOW_COORDS(3)
             };
 
             sampler2D _RampTexture;
@@ -182,9 +186,10 @@ Shader "myShader/WashPainting"
                 v2f o;
                 o.worldPos = UnityObjectToWorldDir(v.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv.xy = TRANSFORM_TEX(v.uv, _OutlineNoise);
                 o.uv.zw = TRANSFORM_TEX(v.uv, _ModelTexture);
+                TRANSFER_SHADOW(o)
                 return o;
             }
 
@@ -199,10 +204,14 @@ Shader "myShader/WashPainting"
                 float burn = tex2D(_OutlineNoise, i.uv.xy).r / 3;
                 diff = diff + burn * _ShadowPower;
 
+                fixed shadow = SHADOW_ATTENUATION(i);
+                if(shadow == 0.0f) diff = 0.0f;
+
                 fixed4 color = tex2D(_RampTexture, float2(diff,diff));
                 return color;
             }
             ENDCG
         }
     }
+    Fallback "Diffuse"
 }
